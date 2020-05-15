@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+	function opentab(evt, cityName) {
+	  // Declare all variables
+	  var i, tabcontent, tablinks;
+
+	  // Get all elements with class="tabcontent" and hide them
+	  tabcontent = document.getElementsByClassName("tabcontent");
+	  for (i = 0; i < tabcontent.length; i++) {
+	    tabcontent[i].style.display = "none";
+	  }
+
+	  // Get all elements with class="tablinks" and remove the class "active"
+	  tablinks = document.getElementsByClassName("tablinks");
+	  for (i = 0; i < tablinks.length; i++) {
+	    tablinks[i].className = tablinks[i].className.replace(" active", "");
+	  }
+
+	  // Show the current tab, and add an "active" class to the button that opened the tab
+	  document.getElementById(cityName).style.display = "block";
+	  evt.currentTarget.className += " active";
+	}
+</script>
+	<div class='tab'>
+		<button class='tablinks' onclick="opentab(event, 'search')">Search</button>
+		<button class='tablinks' onclick="opentab(event, 'recomm')">Recommedation</button>
+	</div>
+	<div id='search' class='tabcontent'>
+		<br>
+		<h3>영화 검색을 위한 페이지입니다.</h3>
+		<p>현재 <u>영화 제목</u>이나 <u>주연 배우명</u>을 통해 검색할 수 있습니다.<br>
+			검색 결과가 있을 경우 각각의 영화들에 대한 포스터가 나오게 되고 클릭할 경우 해당 영화의 <u>세부 내용 페이지</u>로 이동하게 됩니다.<br>
+			포스터의 이미지는 실시간으로 받아오기 때문에 조연 배우까지의 검색 지원은 과도한 검색 결과가
+		나오기 때문에 현재 제한되어 있습니다.</p>
+		<h4>세부 내용 페이지 내 기능</h4>
+		<p><b>코멘트(리뷰) 작성</b> : 영화에 대한 다양한 정보가 나오게 되며 이 영화에 대한 코멘트(리뷰)를 남길 수 있으며, 이전에 남긴 다른 코멘트들도 볼 수 있습니다.
+		<p><b>띄어쓰기 교정</b> : 작성한 코멘트에 대해 머신러닝의 한 종류인 <u>CRF(Conditional Random Field)모델</u>이 적용되어 띄어쓰기 교정기능을 제공하고 있습니다.<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+		온라인 서비스를 제공하는 heroku의 허용 용량을 초과하지 않기 위해 제한된 성능을 가진 pre-trained 모델이 적용되어 있습니다.</p>
+		<p><b>코멘트 감성 분석</b> : 딥러닝으로 학습된 <u>Keras 모델들</u>로 작성된 코멘트들에 대해 prediction을 수행하여 긍정적인(+) 코멘트들과 부정적인(-) 코멘트들로 나누어 보여주게 됩니다.<br>
+		<h6>Keras 감성 분석</h6>
+		<p>데이터 : 데이터는 <u>네이버 영화 리뷰 데이터</u>를 사용하였습니다.<br>
+			모델 : Word-level Embedding + Bi-LSTM, Character-level CNN + Bi-LSTM 두 모델로 이루어진 Average ensemble 모델을 이용하였습니다.<br>
+			지표 : F1-score = 0.8548(word-level) + 0.8503(char-level) => 0.8684(ensemble) <br>&emsp;&emsp;&nbsp;
+			Accuracy = 0.8495(word-level) + 0.8526(char-level) => 0.8650(ensemble)<br>
+			전처리 :<br>
+			# Word-level<br>&emsp;&emsp;&nbsp;
+			Konlpy 내 tagger인 Okt를 사용하여 문장 내 단어들의 morphing을 진행하였습니다.<br>&emsp;&emsp;&nbsp;
+			훈련 데이터 내 vocab_size는 43,752개이며 이 중 상위 30,000개를 사용하여 tokenize 하였습니다.<br>&emsp;&emsp;&nbsp;
+			훈련 데이터 내 리뷰의 평균 단어 수는 10.6개이고 최대 69개가 등장하여
+			sequence의 고정 길이는 70으로 설정하였고<br>&emsp;&emsp;&nbsp;
+			성능에 지장이 가지 않도록 앞에서부터 padding을 진행하였습니다.<br>
+			<br>
+			# Character-level<br>&emsp;&emsp;&nbsp;
+			word-level로 사용하여 전처리를 진행하게 되면 vocab_size에 따라 덜 중요한 단어들이 사용되지 않거나<br>&emsp;&emsp;&nbsp;
+			OOV(Out-Of-Vocabulary)에 대응할 수 없게 됩니다.<br>&emsp;&emsp;&nbsp;
+			그래서 문장을 문자 단위로 전처리하여 최대한 모든 의미를 유지하면서, <br>&emsp;&emsp;&nbsp;
+			코멘트(리뷰) 특성상 개인마다 단어 사용이 다양하고 오타도 종종 발생하기 때문에 OOV에 유연하게 대처할 수 있도록<br>&emsp;&emsp;&nbsp;
+			<u>문자 단위 임베딩</u>으로 전처리하고 이에 맞는 모델을 구성하여 사용하였습니다.<br>
+			
+		</p>
+
+		</p>
+		<br><br><br><br>
+	</div>
+
+	<div id='recomm' class='tabcontent'>
+		<br>
+		<h3>영화 추천을 위한 페이지입니다.</h3>
+		<p>검색은 영화 제목으로만 검색할 수 있고 검색어와 함께 추천 방식까지 선택하여야 검색이 실행되고 그 후에 검색 결과가 포스터들로 나오게 됩니다.<br>
+			추천은 영화의 다양한 요소들 중 <u>줄거리</u>에 가장 중점을 두며 결과에 가장 큰 영향을 미치도록 설계했습니다.<br>
+			그리고 결과는 <u>장르가 유사하면서 유명한 작품들을 위주</u>로 나타나도록 일종의 보정 기능으로 <u>장르와 평점</u>이 반영되었습니다.<br>
+			따라서, 결과는 여러 테스트를 거치며 파라미터 튜닝을 진행하여 나오게 된 계수들로 이루어진 가중치 합이 결과점수가 됩니다.<br>
+			보여지는 순서는 좌측 상단부터 오른쪽으로 가며 결과점수의 내림차순으로 나타나게 됩니다.<br>
+			( 현재 성능 및 속도 : 키워드 >= 벡터 > 클러스터링 )</p>
+		<h4>추천에 기반이 되는 요소들</h4>
+		<p>1. <b>줄거리</b>
+			<br>줄거리를 해석하는 데에 있어서 여러 방식으로 접근하였습니다.<br>(참고:<a href='https:www.github.com/jbose038/naver-movie-recommendation'>줄거리를 활용한 네이버 영화 추천에 대한 다양한 접근 방식</a>)
+		</p>
+		<p>&emsp;1-1.<b>키워드 기반 - Textrank, Word2Vec</b></p>
+		<p>&emsp;&nbsp;
+		Pagerank에서 파생된 Textrank를 사용하여 줄거리의 문장들 내 단어들의 관계를 통해 각 영화마다 키워드들을 추출합니다.<br>&emsp;&nbsp;
+		그리고 모든 영화들의 줄거리로부터 pre-trained된 Word2Vec을 이용하여 Cosine similarity로 유사도를 계산합니다. 
+		</p>
+		<p>&emsp;1-2.<b>벡터 기반 - BoW</b></p>
+		<p>&emsp;&nbsp;평소에 자주 사용하는 사이킷런에서 제공하는 TfidfVectorizer, CountVectorizer를 사용하여 여러 테스트를 거치며 파라미터 튜닝된 모델을 사용하고 있습니다.<br>&emsp;
+		그리고 이 기반 또한 데이터가 벡터로 구성되어 있기 떄문에 Cosine similarity로 유사도를 계산합니다.
+		</p>
+
+		<p>&emsp;1-3.<b>클러스터링 기반 - K-means clustering</b></p>
+		<p>&emsp;&nbsp;이 방법 또한 평소에 자주 사용하는 사이킷런에서 제공하는 MiniBatchKMeans를 사용하여 여러 테스트를 거치며 파라미터 튜닝된 모델을 사용하고 있습니다.<br>&emsp;
+		기존엔 KMeans를 사용하였지만 현재 데이터셋의 분포로 인해 더 좋은 결과를 제공하기 위해 더 유연한 방식인 MiniBatchKMeans가 사용되고 있습니다.<br>&emsp;
+		<u>따라서, 클러스터링 기반은 항상 같은 결과를 보장하지 않습니다.</u><br>&emsp;
+		(분포와 관련하여 위의 참고 링크의 README에 시각화와 함께 자세하게 설명되어 있습니다.)
+		</p>
+		<p>2. <b>장르</b></p>
+		<p>
+			장르의 점수화에 있어서는 Cosine similarity(코사인 유사도)를 사용했습니다.
+		</p>
+		<p>3. <b>평점</b></p>
+		<p>
+			영화의 평점만 이용하기엔 변별력이 없어 사용할 수 없습니다.<br>
+			그래서 해외 유명 영화사이트인 <a href='https://www.imdb.com/'>IMDB</a>의 Weighted Rating(가중치 평점)시스템을 적용하여 사용하고 있습니다.<br>
+			이로 인해, 평점은 매우 높지만, 평점 참여 수가 매우 낮은 마이너 영화와 같은 영화들이 추천 리스트에 등장하는 것을 방지하고 있습니다.
+		</p>
+		<br><br><br><br>
+	</div>
+
+{% endblock %}

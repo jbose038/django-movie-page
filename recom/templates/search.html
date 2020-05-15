@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<div>
+		{% if msg %}
+	   	<script>alert("{{ msg }}");</script>
+	 	{% endif %}
+	 	
+		<h3>영화 검색</h3>
+		<form method='POST'>
+			{% csrf_token %}
+			<input type="text" class="mr-sm-2" name='title_name' size='50' placeholder="영화 제목, 주연 배우..." aria-label="Search"><br>
+
+			<button class="btn btn-outline-success my-2 " type='submit'>Search</button><br><br>
+	    </form>
+	    <h4>{{search_word}}에 대한 검색결과 :총 {{result|length}}개</h4>
+	</div>
+	<container>
+		{% if result %}
+		<div class='row'>
+			{% for movie in result %}
+				{% if forloop.counter0|divisibleby:3 %}
+					</div><br><div class='row'>
+				{% endif %}
+				<div class='col-4'>
+					<a href="{% url 'detail' movie.2 %}">
+						<img src={{movie.0}}, height="500", width="350">
+					</a>
+				</div>
+		{% endfor %}
+		{% endif %}
+	</container>
+{% endblock %}

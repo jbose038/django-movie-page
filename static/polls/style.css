@@ -1,0 +1,16 @@
+li a{
+	color: green;
+}
+body {
+    background: white url("images/background.gif") no-repeat;
+    margin: 0 auto;
+    text-align: 0 auto;
+}
+div {
+	margin: 0 auto;
+    text-align: 0 auto;
+}
+#wrapper{
+  margin: 0 auto;
+  text-align: center;
+}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<div>
+		<h3>선택한 영화인 '{{src_movie}}'에 의한 {{radio_val}} 추천 결과 중 TOP10입니다.</h3>
+	<div>
+	<container>
+		{% if result %}
+		<div class='row'>
+			{% for movie in result %}
+				{% if forloop.counter0|divisibleby:3 %}
+					</div><br><div class='row'>
+				{% endif %}
+				<div class='col-4'>
+					<a href="{% url 'detail' movie.2 %}">
+						<img src={{movie.0}}, height="500", width="350">
+					</a>
+				</div>
+		{% endfor %}
+		{% endif %}
+	</container>
+
+{% endblock %}

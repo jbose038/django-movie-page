@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script>
+		function runScript() {
+		    $.ajax({
+				url: 'auto_spacing',
+				data: {'comment_ajax':$('#comment_text').val()},
+				success: function(data){
+					//console.log('data from view : '+data);
+					$('#comment_text').val(data);
+				}
+			})
+		}
+	</script>
+	<!-- movie info -->
+	<div>
+	<div class='detail'>
+		<img class='resize center' src={{movie.img_url}}><br><br>
+		<a href={{movie.page_url}} target="_blank"><h5>네이버 영화 페이지로 이동 (새 탭)</h5></a>
+		<h3>제목 : {{movie.title}}</h1>
+		<h3>출시연도 :{{movie.year}}년</h3>
+		<h3>장르 : {{movie.genre}}</h3>
+		<h3>평점 : {{movie.rating}} ({{movie.vote_count}} 명)</h3>
+		<hr>
+		<h4>주연 :<br>{{movie.main_act}}</h3>
+		<h4>조연 :<br>{{movie.supp_act}}</h3>
+		<hr>
+		<h4>줄거리 : <br>{{movie.plot}}</h4>
+	</div>
+	</div>
+
+	<div>
+		<!-- comment form -->
+		<div id='div_make_comments' class="card">
+	    	<h5 class="card-header">Leave a Comment</h5>
+	    	<div class="card-body">
+	        	<form method='POST'>
+	        		{% csrf_token %}
+	         		<textarea id='comment_text' name='comment_area'
+	         		rows="4" cols="70"></textarea><br>
+
+	         		<input type='button' class="btn btn-secondary"
+	         		value='Space Correction' id='spacing'
+	         		onclick="runScript()"></input>
+	         		<button type="submit" class="btn btn-primary">Submit</button>
+	        	</form>
+	    	</div>
+	    </div>
+	    <div id='div_comments' class='card'>
+	    	<h5 class="card-header">Comments</h5>
+
+	        <div class='comments'>
+    			<h5 class="card-header">Positive</h5>
+				{% for comment in comments_pos %}
+	        	<!-- Single Comment -->
+				<div class="media-body">
+					<h5 class='mt-0'><img class="d-flex mr-3 rounded-circle mx-auto" src={{comment.comment_thumbnail_url}} alt="" height="100" width="100">{{comment.comment_date}}</h5>
+					<br>
+					<h5 class='mt-0'>{{comment.comment_textfield}}</h5>
+				</div>
+				<hr>
+				{% endfor %}
+	        </div>
+	        
+	        <div class='comments'>
+				<h5 class="card-header">Negative</h5>
+				{% for comment in comments_neg %}
+	        	<!-- Single Comment -->
+				<div class="media-body">
+					<h5 class='mt-0'><img class="d-flex mr-3 rounded-circle mx-auto" src={{comment.comment_thumbnail_url}} alt="" height="100" width="100">{{comment.comment_date}}</h5>
+					<br>
+					<h5 class='mt-0'>{{comment.comment_textfield}}</h5>
+				</div>
+				<hr>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script>
+		function getRadioVal() {
+			var radios = document.getElementByName('type');
+			for(var i=0;i<x.length;i++)
+				if(radios[i].checked)
+					return radios[i].value;
+		}
+	</script>
+<script>
+$(document).ready(function() { 
+    $('#poster').click(function() { 
+        $.blockUI({ 
+            message: $('#loading'), 
+            css: { 
+                top:  ($(window).height() - 400) /2 + 'px', 
+                left: ($(window).width() - 400) /2 + 'px', 
+                width: '400px' 
+            } 
+        }); 
+ 
+        setTimeout($.unblockUI, 2000); 
+    }); 
+}); 
+</script>	
+	<div>
+		{% if msg %}
+	   	<script>alert("{{ msg }}");</script>
+	 	{% endif %} 
+
+	 	<h3>영화 제목 입력 & 추천 방식 선택 후 검색<br>
+	 	해당 영화를 선택</h3>
+	 	<h5>(선택 후 추천 프로세스의 처리 시간이 다소 걸립니다.)</h5>
+		<form method='POST'>
+			{% csrf_token %}
+			<input type="text" class="mr-sm-2" name='title_name' size='50' placeholder="영화 제목" aria-label="Search"><br><br>
+
+			{% if radio_val == 'k' %}
+				<input type='radio' id='k' name='type' value='k' checked='checked'>
+			{% else %}
+				<input type='radio' id='k' name='type' value='k'>
+			{% endif %}
+			<label for='k'>키워드 기반</label>
+
+			{% if radio_val == 'v' %}
+				<input type='radio' id='v' name='type' value='v' checked='checked'>
+			{% else %}
+				<input type='radio' id='v' name='type' value='v'>
+			{% endif %}
+			<label for='v'>벡터 기반</label>
+
+			{% if radio_val == 'c' %}
+				<input type='radio' id='c' name='type' value='c' checked="checked">
+			{% else %}
+				<input type='radio' id='c' name='type' value='c'>
+			{% endif %}
+			<label for='c'>클러스터링 기반</label><br>
+
+			<button class="btn btn-outline-success my-2 " type='submit'>Search</button><br><br>
+	    </form>
+
+
+	</div>
+	<container>
+		{% if result %}
+		<div class='row'>
+			{% for movie in result %}
+				{% if forloop.counter0|divisibleby:3 %}
+					</div><br><div class='row'>
+				{% endif %}
+				<div class='col-4'>
+					<a id='poster' href="{% url 'recomm_result' movie.2 radio_val %}">
+						<img src={{movie.0}}, height="500", width="350">
+					</a>
+				</div>
+		{% endfor %}
+		{% endif %}
+	</container>
+{% endblock %}
