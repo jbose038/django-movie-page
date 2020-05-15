@@ -22,6 +22,7 @@
 
    작성한 코멘트(리뷰)에 대해 CRF 모델이 적용되어 띄어쓰기 교정 기능을 제공하고 있습니다.<br>
    CRF모델은 python-crfsuite를 사용하여 생성되었습니다.<br>
+   (업로드시 파일당 100MB 용량 제한으로 crf 모델(248MB)은 포함되어 있지 않습니다.)
 
    CRF는 딥러닝이 사용되기 전에 널리 사용되던 sequential labeling 문제에 대한 알고리즘입니다.<br>
    이 알고리즘이 사용되기 전엔 Maximum Entropy Model, Maximum Entropy Markov Model 등이 사용되었으며<br>
